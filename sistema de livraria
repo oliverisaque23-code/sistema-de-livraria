@@ -1,0 +1,232 @@
+import tkinter as tk
+from tkinter import messagebox
+
+title = "Sistema de Livraria"
+
+# Função chamada ao clicar no botão
+def adicionar_livro():
+    titulo = entrada_titulo.get()
+    autor = entrada_autor.get()
+    ano = entrada_ano.get()
+    print(f"Livro adicionado: {titulo} - {autor} ({ano})")
+
+# Criar a janela principal
+janela = tk.Tk()
+janela.title("Cadastro de Livro")
+janela.geometry("350x200")
+
+# Rótulo e entrada para Título
+label_titulo = tk.Label(janela, text="Título:")
+label_titulo.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entrada_titulo = tk.Entry(janela, width=30)
+entrada_titulo.grid(row=0, column=1, padx=5, pady=5)
+
+# Rótulo e entrada para Autor
+label_autor = tk.Label(janela, text="Autor:")
+label_autor.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+entrada_autor = tk.Entry(janela, width=30)
+entrada_autor.grid(row=1, column=1, padx=5, pady=5)
+
+# Rótulo e entrada para Ano
+label_ano = tk.Label(janela, text="Ano:")
+label_ano.grid(row=2, column=0, padx=5, pady=5, sticky="e")
+entrada_ano = tk.Entry(janela, width=30)
+entrada_ano.grid(row=2, column=1, padx=5, pady=5)
+
+# Botão "Adicionar livro"
+botao_adicionar = tk.Button(janela, text="Adicionar livro", command=adicionar_livro)
+botao_adicionar.grid(row=3, column=0, columnspan=2, pady=10)
+
+# Iniciar o loop da interface
+janela.mainloop()
+
+
+import tkinter as tk
+from tkinter import ttk
+
+# Lista para armazenar os livros
+catalogo_livros = []
+
+# Função chamada ao clicar no botão
+def adicionar_livro():
+    titulo = entrada_titulo.get()
+    autor = entrada_autor.get()
+    ano = entrada_ano.get()
+
+    if titulo and autor and ano:
+        # Adiciona à lista
+        catalogo_livros.append((titulo, autor, ano))
+
+        # Insere no Treeview
+        tree.insert("", "end", values=(titulo, autor, ano))
+
+        # Limpa os campos
+        entrada_titulo.delete(0, tk.END)
+        entrada_autor.delete(0, tk.END)
+        entrada_ano.delete(0, tk.END)
+
+# Criar a janela principal
+janela = tk.Tk()
+janela.title("Cadastro de Livros")
+janela.geometry("500x400")
+
+# Rótulo e entrada para Título
+label_titulo = tk.Label(janela, text="Título:")
+label_titulo.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entrada_titulo = tk.Entry(janela, width=40)
+entrada_titulo.grid(row=0, column=1, padx=5, pady=5)
+
+# Rótulo e entrada para Autor
+label_autor = tk.Label(janela, text="Autor:")
+label_autor.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+entrada_autor = tk.Entry(janela, width=40)
+entrada_autor.grid(row=1, column=1, padx=5, pady=5)
+
+# Rótulo e entrada para Ano
+label_ano = tk.Label(janela, text="Ano:")
+label_ano.grid(row=2, column=0, padx=5, pady=5, sticky="e")
+entrada_ano = tk.Entry(janela, width=40)
+entrada_ano.grid(row=2, column=1, padx=5, pady=5)
+
+# Botão "Adicionar livro"
+botao_adicionar = tk.Button(janela, text="Adicionar livro", command=adicionar_livro)
+botao_adicionar.grid(row=3, column=0, columnspan=2, pady=10)
+
+# Treeview para exibir os livros
+tree = ttk.Treeview(janela, columns=("Título", "Autor", "Ano"), show="headings")
+tree.heading("Título", text="Título")
+tree.heading("Autor", text="Autor")
+tree.heading("Ano", text="Ano")
+tree.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+# Ajustar redimensionamento da Treeview
+janela.grid_rowconfigure(4, weight=1)
+janela.grid_columnconfigure(1, weight=1)
+
+# Iniciar o loop da interface
+janela.mainloop()
+
+
+
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+# Lista para armazenar os livros
+catalogo_livros = []
+
+# Função para atualizar o Treeview com os livros da lista
+def atualizar_treeview(lista):
+    tree.delete(*tree.get_children())
+    for livro in lista:
+        tree.insert("", "end", values=livro)
+
+# Função para adicionar livro
+def adicionar_livro():
+    try:
+        titulo = entrada_titulo.get()
+        autor = entrada_autor.get()
+        ano = entrada_ano.get()
+
+        if not titulo or not autor or not ano:
+            raise ValueError("Todos os campos devem ser preenchidos.")
+
+        catalogo_livros.append((titulo, autor, ano))
+        atualizar_treeview(catalogo_livros)
+
+        entrada_titulo.delete(0, tk.END)
+        entrada_autor.delete(0, tk.END)
+        entrada_ano.delete(0, tk.END)
+
+    except ValueError as ve:
+        messagebox.showwarning("Campos vazios", str(ve))
+    except Exception as e:
+        messagebox.showerror("Erro inesperado", f"Ocorreu um erro: {str(e)}")
+
+# Função de pesquisa
+def pesquisar_livro():
+    try:
+        termo = entrada_pesquisa.get().lower()
+        resultados = [livro for livro in catalogo_livros if termo in livro[0].lower() or termo in livro[1].lower()]
+        atualizar_treeview(resultados)
+    except Exception as e:
+        messagebox.showerror("Erro na pesquisa", f"Ocorreu um erro: {str(e)}")
+
+# Funções de classificação
+def classificar_por_titulo():
+    try:
+        catalogo_livros.sort(key=lambda x: x[0].lower())
+        atualizar_treeview(catalogo_livros)
+    except Exception as e:
+        messagebox.showerror("Erro na classificação", f"Ocorreu um erro: {str(e)}")
+
+def classificar_por_autor():
+    try:
+        catalogo_livros.sort(key=lambda x: x[1].lower())
+        atualizar_treeview(catalogo_livros)
+    except Exception as e:
+        messagebox.showerror("Erro na classificação", f"Ocorreu um erro: {str(e)}")
+
+# Função para remover livro
+def remover_livro():
+    try:
+        selecionado = tree.selection()
+        if not selecionado:
+            raise ValueError("Nenhum livro selecionado.")
+
+        valores = tree.item(selecionado)["values"]
+        catalogo_livros.remove(tuple(valores))
+        tree.delete(selecionado)
+
+    except ValueError as ve:
+        messagebox.showerror("Erro", str(ve))
+    except Exception as e:
+        messagebox.showerror("Erro inesperado", f"Ocorreu um erro: {str(e)}")
+
+# Criar a janela principal
+janela = tk.Tk()
+janela.title("Gerenciador de Livros")
+janela.geometry("600x550")
+
+# Entradas de dados
+tk.Label(janela, text="Título:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+entrada_titulo = tk.Entry(janela, width=40)
+entrada_titulo.grid(row=0, column=1, padx=5, pady=5)
+
+tk.Label(janela, text="Autor:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+entrada_autor = tk.Entry(janela, width=40)
+entrada_autor.grid(row=1, column=1, padx=5, pady=5)
+
+tk.Label(janela, text="Ano:").grid(row=2, column=0, padx=5, pady=5, sticky="e")
+entrada_ano = tk.Entry(janela, width=40)
+entrada_ano.grid(row=2, column=1, padx=5, pady=5)
+
+# Botão adicionar
+tk.Button(janela, text="Adicionar livro", command=adicionar_livro).grid(row=3, column=0, columnspan=2, pady=10)
+
+# Campo de pesquisa
+tk.Label(janela, text="Pesquisar:").grid(row=4, column=0, padx=5, pady=5, sticky="e")
+entrada_pesquisa = tk.Entry(janela, width=30)
+entrada_pesquisa.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+tk.Button(janela, text="Pesquisar", command=pesquisar_livro).grid(row=4, column=1, padx=5, pady=5, sticky="e")
+
+# Botões de classificação
+tk.Button(janela, text="Classificar por título", command=classificar_por_titulo).grid(row=5, column=0, padx=5, pady=5)
+tk.Button(janela, text="Classificar por autor", command=classificar_por_autor).grid(row=5, column=1, padx=5, pady=5, sticky="w")
+
+# Treeview
+tree = ttk.Treeview(janela, columns=("Título", "Autor", "Ano"), show="headings")
+tree.heading("Título", text="Título")
+tree.heading("Autor", text="Autor")
+tree.heading("Ano", text="Ano")
+tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+# Botão remover
+tk.Button(janela, text="Remover livro", command=remover_livro).grid(row=7, column=0, columnspan=2, pady=10)
+
+# Ajustar redimensionamento
+janela.grid_rowconfigure(6, weight=1)
+janela.grid_columnconfigure(1, weight=1)
+
+# Iniciar o loop da interface
+janela.mainloop()
